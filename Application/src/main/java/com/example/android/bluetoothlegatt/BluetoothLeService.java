@@ -1,4 +1,4 @@
-package com.example.android.safetysensor;
+package com.example.android.bluetoothlegatt;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;

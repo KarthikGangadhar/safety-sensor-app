@@ -1,4 +1,4 @@
-package com.example.android.safetysensor;
+package com.example.android.bluetoothlegatt;
 
 import java.util.HashMap;
 
