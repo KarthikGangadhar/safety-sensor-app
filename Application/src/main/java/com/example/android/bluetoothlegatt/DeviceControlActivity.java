@@ -1,14 +1,19 @@
 package com.example.android.bluetoothlegatt;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -48,6 +53,9 @@ public class DeviceControlActivity extends Activity {
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
+    private AlertDialog dialog = null;
+    private Ringtone ringtone = null;
+    private Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -92,7 +100,8 @@ public class DeviceControlActivity extends Activity {
                 // Show all the supported services and characteristics on the user interface.
                 displayGattServices(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+//                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+                  displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA), context);
             }
         }
     };
@@ -219,11 +228,61 @@ public class DeviceControlActivity extends Activity {
         });
     }
 
-    private void displayData(String data) {
-        if (data != null) {
-            mDataField.setText(data);
+    private void displayData(String data, Context context) {
+        try {
+            if (data != null) {
+                if(data.contains("Sensor") || data.contains("��") || data.contains("\n00 00")){
+                    mDataField.setText(data);
+                }else{
+                    String[] result =  data.split("\r\n\n", 0);
+                    String[] readings = result[0].split(",", 0);
+                    Float Average = Float.parseFloat(readings[0]);
+                    Float value = Float.parseFloat(readings[1]);
+                    if(Average <= 0.00){
+                        mDataField.setText(value.toString());
+                    }else{
+                        Float NormalizedData = ((value - Average) / Average ) * 100;
+                        NormalizedData = NormalizedData < 0 ? NormalizedData * -1 : NormalizedData;
+                        mDataField.setText(NormalizedData.toString());
+                        if(NormalizedData >= 30.0){
+                            if (dialog != null && dialog.isShowing()) {
+                            } else {
+                                dialog = showAlertDialog(context, "AQMS-Lite", "CO2 levels increased, its harmful to your health", "Cancel", "OK");
+                            }
+                            ringtone.play();
+                        }
+                    }
+                }
+
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+
+    // Method to display dialogue
+    public AlertDialog showAlertDialog(Context context, String title, String message, String posBtnMsg, String negBtnMsg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton(posBtnMsg, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.setNegativeButton(negBtnMsg, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        return dialog;
+    }
+
 
     // Demonstrates how to iterate through the supported GATT Services/Characteristics.
     // In this sample, we populate the data structure that is bound to the ExpandableListView
