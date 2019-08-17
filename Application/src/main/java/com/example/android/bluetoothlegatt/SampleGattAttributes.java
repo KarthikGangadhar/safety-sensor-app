@@ -7,9 +7,9 @@ import java.util.HashMap;
  */
 public class SampleGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
-    public static String GAS_RESISTANCE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
+//    public static String GAS_RESISTANCE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
     public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-
+    public static String GAS_RESISTANCE_MEASUREMENT = "d973f2e1-b19e-11e2-9e96-0800200c9a66";
     static {
         // Sample Services.
        attributes.put("0000180a-0000-1000-8000-00805f9b34fb", "Device Information Service");
