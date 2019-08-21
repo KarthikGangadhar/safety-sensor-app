@@ -24,6 +24,10 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +46,7 @@ public class DeviceControlActivity extends Activity {
 
     private TextView mConnectionState;
     private TextView mDataField;
+    private GraphView graph;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -142,7 +147,8 @@ public class DeviceControlActivity extends Activity {
 
     private void clearUI() {
         mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-        mDataField.setText(R.string.no_data);
+//        mDataField.setText(R.string.no_data);
+//        graph.addSeries();
     }
 
     @Override
@@ -159,7 +165,8 @@ public class DeviceControlActivity extends Activity {
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
-        mDataField = (TextView) findViewById(R.id.data_value);
+//        mDataField = (TextView) findViewById(R.id.data_value);
+        graph = (GraphView) findViewById(R.id.graph);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -230,20 +237,28 @@ public class DeviceControlActivity extends Activity {
 
     private void displayData(String data, Context context) {
         try {
+            LineGraphSeries<DataPoint> series;
             if (data != null) {
                 if(data.contains("Sensor") || data.contains("��") || data.contains("\n00 00")){
-                    mDataField.setText(data);
+//                    mDataField.setText(data);
                 }else{
                     String[] result =  data.split("\r\n\n", 0);
                     String[] readings = result[0].split(",", 0);
                     Float Average = Float.parseFloat(readings[0]);
                     Float value = Float.parseFloat(readings[1]);
                     if(Average <= 0.00){
-                        mDataField.setText(value.toString());
+//                        mDataField.setText(value.toString());
+                        series = new LineGraphSeries<>(new DataPoint[] {
+                                new DataPoint(0, 1),
+                                new DataPoint(1, 5),
+                                new DataPoint(2, 3),
+                                new DataPoint(3, 2),
+                                new DataPoint(4, 6)
+                        });
                     }else{
                         Float NormalizedData = ((value - Average) / Average ) * 100;
                         NormalizedData = NormalizedData < 0 ? NormalizedData * -1 : NormalizedData;
-                        mDataField.setText(NormalizedData.toString());
+//                        mDataField.setText(NormalizedData.toString());
                         if(NormalizedData >= 30.0){
                             if (dialog != null && dialog.isShowing()) {
                             } else {
@@ -251,7 +266,15 @@ public class DeviceControlActivity extends Activity {
                             }
                             ringtone.play();
                         }
+                        series = new LineGraphSeries<>(new DataPoint[] {
+                                new DataPoint(0, 1),
+                                new DataPoint(1, 5),
+                                new DataPoint(2, 3),
+                                new DataPoint(3, 2),
+                                new DataPoint(4, 6)
+                        });
                     }
+                    graph.addSeries(series);
                 }
 
             }
