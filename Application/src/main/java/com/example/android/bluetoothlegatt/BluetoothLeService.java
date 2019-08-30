@@ -120,6 +120,16 @@ public class BluetoothLeService extends Service {
 //            final int heartRate = characteristic.getIntValue(format, 1);
 //            Log.d(TAG, String.format("Received heart rate: %d", heartRate));
 //            intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+//            final String data = characteristic.getStringValue(10);
+//            final String data1 = characteristic.getStringValue(0);
+
+            //
+//            if (data != null && data.length > 0) {
+//                final StringBuilder stringBuilder = new StringBuilder(data.length);
+//                for(byte byteChar : data)
+//                    stringBuilder.append(String.format("%02X ", byteChar));
+//                intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
+//            }
 //        } else {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();

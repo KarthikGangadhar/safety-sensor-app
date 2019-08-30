@@ -46,6 +46,8 @@ public class DeviceControlActivity extends Activity {
 
     private TextView mConnectionState;
     private TextView mDataField;
+    private TextView mDataField1;
+    private TextView mDataField2;
     private GraphView graph;
     private String mDeviceName;
     private String mDeviceAddress;
@@ -147,7 +149,9 @@ public class DeviceControlActivity extends Activity {
 
     private void clearUI() {
         mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-//        mDataField.setText(R.string.no_data);
+        mDataField.setText(R.string.no_data);
+        mDataField1.setText(R.string.no_data);
+        mDataField2.setText(R.string.no_data);
 //        graph.addSeries();
     }
 
@@ -165,8 +169,10 @@ public class DeviceControlActivity extends Activity {
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
-//        mDataField = (TextView) findViewById(R.id.data_value);
-        graph = (GraphView) findViewById(R.id.graph);
+        mDataField = (TextView) findViewById(R.id.data_value);
+        mDataField1 = (TextView) findViewById(R.id.data_value1);
+        mDataField2 = (TextView) findViewById(R.id.data_value2);
+        //        graph = (GraphView) findViewById(R.id.graph);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -240,41 +246,62 @@ public class DeviceControlActivity extends Activity {
             LineGraphSeries<DataPoint> series;
             if (data != null) {
                 if(data.contains("Sensor") || data.contains("��") || data.contains("\n00 00")){
-//                    mDataField.setText(data);
+                    mDataField.setText(data);
+                    mDataField1.setText(data);
+                    mDataField2.setText(data);
                 }else{
-                    String[] result =  data.split("\r\n\n", 0);
-                    String[] readings = result[0].split(",", 0);
-                    Float Average = Float.parseFloat(readings[0]);
-                    Float value = Float.parseFloat(readings[1]);
-                    if(Average <= 0.00){
-//                        mDataField.setText(value.toString());
-                        series = new LineGraphSeries<>(new DataPoint[] {
-                                new DataPoint(0, 1),
-                                new DataPoint(1, 5),
-                                new DataPoint(2, 3),
-                                new DataPoint(3, 2),
-                                new DataPoint(4, 6)
-                        });
+//                    String[] result =  data.split("\r\n\n", 0);
+//                    String[] readings = result[0].split(",", 0);
+//                    Float Average = Float.parseFloat(readings[0]);
+//                    Float value = Float.parseFloat(readings[1]);
+//                    if(Average <= 0.00){
+                    String[] result;
+
+                    if (data.contains("\r\n\r")){
+                        result =  data.split("\r\n", 0);
+                    }else if(data.contains("\n")){
+                        result =  data.split("\n", 0);
                     }else{
-                        Float NormalizedData = ((value - Average) / Average ) * 100;
-                        NormalizedData = NormalizedData < 0 ? NormalizedData * -1 : NormalizedData;
-//                        mDataField.setText(NormalizedData.toString());
-                        if(NormalizedData >= 30.0){
-                            if (dialog != null && dialog.isShowing()) {
-                            } else {
-                                dialog = showAlertDialog(context, "AQMS-Lite", "CO2 levels increased, its harmful to your health", "Cancel", "OK");
-                            }
-                            ringtone.play();
-                        }
-                        series = new LineGraphSeries<>(new DataPoint[] {
-                                new DataPoint(0, 1),
-                                new DataPoint(1, 5),
-                                new DataPoint(2, 3),
-                                new DataPoint(3, 2),
-                                new DataPoint(4, 6)
-                        });
+                        result =  data.split("\n", 0);
                     }
-                    graph.addSeries(series);
+
+                    String[] result1 = result[0].split(":",0);
+
+                    if(result1[0].contentEquals("F")){
+                        mDataField.setText(result1[1]);
+                    }else if (result1[0].contentEquals("S")){
+                        mDataField1.setText(result1[1]);
+                    }else if (result1[0].contentEquals("M")){
+                        mDataField2.setText(result1[1]);
+                    }
+//                    mDataField.setText(data);
+//                        series = new LineGraphSeries<>(new DataPoint[] {
+//                                new DataPoint(0, 1),
+//                                new DataPoint(1, 5),
+//                                new DataPoint(2, 3),
+//                                new DataPoint(3, 2),
+//                                new DataPoint(4, 6)
+//                        });
+//                    }else{
+//                        Float NormalizedData = ((value - Average) / Average ) * 100;
+//                        NormalizedData = NormalizedData < 0 ? NormalizedData * -1 : NormalizedData;
+//                        mDataField.setText(NormalizedData.toString());
+//                        if(NormalizedData >= 30.0){
+//                            if (dialog != null && dialog.isShowing()) {
+//                            } else {
+//                                dialog = showAlertDialog(context, "AQMS-Lite", "CO2 levels increased, its harmful to your health", "Cancel", "OK");
+//                            }
+//                            ringtone.play();
+//                        }
+////                        series = new LineGraphSeries<>(new DataPoint[] {
+////                                new DataPoint(0, 1),
+////                                new DataPoint(1, 5),
+////                                new DataPoint(2, 3),
+////                                new DataPoint(3, 2),
+////                                new DataPoint(4, 6)
+////                        });
+//                    }
+//                    graph.addSeries(series);
                 }
 
             }
