@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -24,6 +25,12 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -31,6 +38,8 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static java.lang.Float.parseFloat;
 
 /**
  * For a given BLE device, this Activity provides the user interface to connect, display data,
@@ -49,6 +58,7 @@ public class DeviceControlActivity extends Activity {
     private TextView mDataField1;
     private TextView mDataField2;
     private GraphView graph;
+    private LineChart chart;//(LineChart) findViewById(R.id.chart);
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -57,11 +67,13 @@ public class DeviceControlActivity extends Activity {
             new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
+    private List<Entry> lineEntries = new ArrayList<Entry>();
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
     private AlertDialog dialog = null;
     private Ringtone ringtone = null;
+    private float xvalue = 0;
     private Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
     // Code to manage Service lifecycle.
@@ -173,7 +185,7 @@ public class DeviceControlActivity extends Activity {
         mDataField1 = (TextView) findViewById(R.id.data_value1);
         mDataField2 = (TextView) findViewById(R.id.data_value2);
         //        graph = (GraphView) findViewById(R.id.graph);
-
+        chart = (LineChart) findViewById(R.id.chart);
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
@@ -244,6 +256,8 @@ public class DeviceControlActivity extends Activity {
     private void displayData(String data, Context context) {
         try {
             LineGraphSeries<DataPoint> series;
+            LineChart chart = new LineChart(context);
+            
             if (data != null) {
                 if(data.contains("Sensor") || data.contains("��") || data.contains("\n00 00")){
                     mDataField.setText(data);
@@ -268,12 +282,19 @@ public class DeviceControlActivity extends Activity {
                     String[] result1 = result[0].split(":",0);
 
                     if(result1[0].contentEquals("F")){
+
                         mDataField.setText(result1[1]);
                     }else if (result1[0].contentEquals("S")){
+                        xvalue += 1.0;
+//                        if(xvalue < 2){
+                        String[] yvalue = result1[1].split(",",0);
+                        drawLineChart(1, "RED", xvalue, parseFloat(yvalue[0]), "Pressure");
+//                        }
                         mDataField1.setText(result1[1]);
                     }else if (result1[0].contentEquals("M")){
                         mDataField2.setText(result1[1]);
                     }
+
 //                    mDataField.setText(data);
 //                        series = new LineGraphSeries<>(new DataPoint[] {
 //                                new DataPoint(0, 1),
@@ -389,6 +410,46 @@ public class DeviceControlActivity extends Activity {
                 new int[] { android.R.id.text1, android.R.id.text2 }
         );
         mGattServicesList.setAdapter(gattServiceAdapter);
+    }
+
+//    int chartId, String color, float xValue, float yValue
+    private void drawLineChart(int chartId, String color,float xValue, float yValue, String name) {
+        LineChart lineChart = findViewById(R.id.lineChart);
+        List<Entry> lineEntries = getDataSet(xValue, yValue);
+//        List<Entry> lineEntries = getDataSet();
+        LineDataSet lineDataSet = new LineDataSet(lineEntries, name);
+        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        lineDataSet.setHighlightEnabled(true);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setColor(Color.RED);
+        lineDataSet.setCircleColor(Color.YELLOW);
+        lineDataSet.setCircleRadius(6);
+        lineDataSet.setCircleHoleRadius(3);
+        lineDataSet.setDrawHighlightIndicators(true);
+        lineDataSet.setHighLightColor(Color.RED);
+        lineDataSet.setValueTextSize(12);
+        lineDataSet.setValueTextColor(Color.DKGRAY);
+
+        LineData lineData = new LineData(lineDataSet);
+        lineChart.getDescription().setText(getString(R.string.price_from_last_10_seconds));
+        lineChart.getDescription().setTextSize(12);
+        lineChart.setDrawMarkers(true);
+        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTH_SIDED);
+        lineChart.animateY(1000);
+        lineChart.getXAxis().setGranularityEnabled(true);
+        lineChart.getXAxis().setGranularity(1.0f);
+        lineChart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
+        lineChart.setData(lineData);
+    }
+
+    private List<Entry> getDataSet(float xValue,float yValue) {
+//        private List<Entry> getDataSet(float x, float y ) {
+//        int x  = 0, y = 5;
+        if(lineEntries.size() > 10){
+            lineEntries.remove(0);
+        }
+        lineEntries.add(new Entry(xValue, yValue));
+        return lineEntries;
     }
 
     private static IntentFilter makeGattUpdateIntentFilter() {

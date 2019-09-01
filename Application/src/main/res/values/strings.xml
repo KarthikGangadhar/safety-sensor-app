@@ -33,4 +33,9 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+
+<!--    <string name="app_name">Learn Android with Real Apps</string>-->
+    <string name="oil_price">Oil Price</string>
+    <string name="price_from_last_10_seconds">Data from last 10 Sec</string>
+
 </resources>
