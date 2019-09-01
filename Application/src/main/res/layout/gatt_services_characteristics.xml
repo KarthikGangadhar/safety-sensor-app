@@ -13,9 +13,16 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <!--    android:layout_margin="10dp"-->
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp">
@@ -144,13 +151,16 @@
         tools:ignore="HardcodedText" >
 
         <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChart"
+            android:id="@+id/lineChart1"
             android:layout_width="333dp"
             android:layout_height="284dp" />
 
     </LinearLayout>
-
-    <ExpandableListView android:id="@+id/gatt_services_list"
+        
+        <ExpandableListView
+            android:id="@+id/gatt_services_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="363dp" />
 </LinearLayout>
+
+</ScrollView>

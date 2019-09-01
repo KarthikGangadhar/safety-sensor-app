@@ -94,6 +94,12 @@ public class DeviceControlActivity extends Activity {
             // Automatically connects to the device upon successful start-up initialization.
             mBluetoothLeService.connect(mDeviceAddress);
             drawLineChart(1, "RED", xvalue, 0, "Pressure");
+//            drawLineChart(2, "RED", xvalue, 0, "Temparature");
+//            drawLineChart(3, "RED", xvalue, 0, "Humidity");
+//            drawLineChart(4, "RED", xvalue, 0, "VOC");
+//            drawLineChart(5, "RED", xvalue, 0, "NO2");
+//            drawLineChart(6, "RED", xvalue, 0, "CO");
+//            drawLineChart(7, "RED", xvalue, 0, "NH3");
         }
 
         @Override
@@ -372,7 +378,7 @@ public class DeviceControlActivity extends Activity {
         LineDataSet set = new LineDataSet(null, "Pressure");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setLineWidth(3f);
-        set.setColor(Color.BLUE);
+        set.setColor(Color.GREEN);
         set.setHighlightEnabled(true);
         set.setDrawValues(true);
         set.setDrawCircles(false);
@@ -463,33 +469,7 @@ public class DeviceControlActivity extends Activity {
 
 //    int chartId, String color, float xValue, float yValue
     private void drawLineChart(int chartId, String color,float xValue, float yValue, String name) {
-          lineChart = findViewById(R.id.lineChart);
-
-//        List<Entry> lineEntries = getDataSet(xValue, yValue);
-//        List<Entry> lineEntries = getDataSet();
-//        LineDataSet lineDataSet = new LineDataSet(lineEntries, name);
-//        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        lineDataSet.setHighlightEnabled(true);
-//        lineDataSet.setLineWidth(2);
-//        lineDataSet.setColor(Color.RED);
-//        lineDataSet.setCircleColor(Color.YELLOW);
-//        lineDataSet.setCircleRadius(6);
-//        lineDataSet.setCircleHoleRadius(3);
-//        lineDataSet.setDrawHighlightIndicators(true);
-//        lineDataSet.setHighLightColor(Color.RED);
-//        lineDataSet.setValueTextSize(12);
-//        lineDataSet.setValueTextColor(Color.DKGRAY);
-//
-//        LineData lineData = new LineData(lineDataSet);
-//        lineChart.getDescription().setText(getString(R.string.price_from_last_10_seconds));
-//        lineChart.getDescription().setTextSize(12);
-//        lineChart.setDrawMarkers(true);
-//        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTH_SIDED);
-//        lineChart.animateY(1000);
-//        lineChart.getXAxis().setGranularityEnabled(true);
-//        lineChart.getXAxis().setGranularity(1.0f);
-//        lineChart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
-//        lineChart.setData(lineData);
+        lineChart = findViewById(R.id.lineChart1);
 
         // enable description text
         lineChart.getDescription().setEnabled(true);
@@ -523,8 +503,8 @@ public class DeviceControlActivity extends Activity {
         l.setTextColor(Color.BLACK);
 
         XAxis xl = lineChart.getXAxis();
-        xl.setTextColor(Color.BLUE);
-        xl.setDrawGridLines(false);
+        xl.setTextColor(Color.BLACK);
+        xl.setDrawGridLines(true);
         xl.setAvoidFirstLastClipping(true);
         xl.setEnabled(true);
 
