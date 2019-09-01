@@ -71,7 +71,7 @@ public class DeviceControlActivity extends Activity {
     LineChart pressureChart;
     LineChart tempChart;
     LineChart humidityChart;
-    LineChart heightChart;
+    LineChart resistanceChart;
     LineChart no2Chart;
     LineChart coChart;
     LineChart nh3Chart;
@@ -101,6 +101,11 @@ public class DeviceControlActivity extends Activity {
             drawLineChart(1, "RED", xvalue, 0, "Pressure", "Realtime Pressure Plot");
             drawLineChart(2, "RED", xvalue, 0, "Temparature", "Realtime Temparature Plot");
             drawLineChart(3, "RED", xvalue, 0, "Humidity", "Realtime Humidity Plot");
+            drawLineChart(4, "RED", xvalue, 0, "Resistance", "Realtime Resistance Plot");
+            drawLineChart(5, "RED", xvalue, 0, "NO2", "Realtime NO2 Plot");
+            drawLineChart(6, "RED", xvalue, 0, "NH3", "Realtime NH3 Plot");
+            drawLineChart(7, "RED", xvalue, 0, "CO", "Realtime CO Plot");
+
         }
 
         @Override
@@ -197,8 +202,7 @@ public class DeviceControlActivity extends Activity {
         mDataField = (TextView) findViewById(R.id.data_value);
         mDataField1 = (TextView) findViewById(R.id.data_value1);
         mDataField2 = (TextView) findViewById(R.id.data_value2);
-        //        graph = (GraphView) findViewById(R.id.graph);
-//        chart = (LineChart) findViewById(R.id.chart);
+
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
@@ -296,6 +300,7 @@ public class DeviceControlActivity extends Activity {
                         xvalue += 1.0;
                         String[] yvalue = result1[1].split(",",0);
                         if(plotData){
+                            addEntry(resistanceChart , xvalue, parseFloat(yvalue[1]));
                             addEntry(tempChart , xvalue, parseFloat(yvalue[2]));
 //                            addEntry(humidityChart , xvalue, parseFloat(yvalue[1]));
                             plotData = false;
@@ -312,6 +317,15 @@ public class DeviceControlActivity extends Activity {
                         mDataField1.setText(result1[1]);
                     }else if (result1[0].contentEquals("M")){
                         mDataField2.setText(result1[1]);
+                        xvalue += 1.0;
+                        String[] yvalue = result1[1].split(",",0);
+                        if(plotData){
+                            addEntry(no2Chart , xvalue, parseFloat(yvalue[0]));
+                            addEntry(nh3Chart , xvalue, parseFloat(yvalue[1]));
+                            addEntry(coChart , xvalue, parseFloat(yvalue[2]));
+                            plotData = false;
+                        }
+                        mDataField1.setText(result1[1]);
                     }
 //                    mDataField.setText(data);
 //                    }else{
@@ -478,23 +492,23 @@ public class DeviceControlActivity extends Activity {
                 break;
 
             case 4 :
-                lineChart = findViewById(R.id.lineChart1);
-                heightChart = findViewById(R.id.lineChart1);
+                lineChart = findViewById(R.id.lineChart4);
+                resistanceChart = findViewById(R.id.lineChart4);
                 break;
 
             case 5 :
-                lineChart = findViewById(R.id.lineChart1);
-                no2Chart = findViewById(R.id.lineChart1);
+                lineChart = findViewById(R.id.lineChart5);
+                no2Chart = findViewById(R.id.lineChart5);
                 break;
 
             case 6 :
-                lineChart = findViewById(R.id.lineChart1);
-                coChart = findViewById(R.id.lineChart1);
+                lineChart = findViewById(R.id.lineChart6);
+                    coChart = findViewById(R.id.lineChart6);
                 break;
 
             case 7 :
-                lineChart = findViewById(R.id.lineChart1);
-                nh3Chart = findViewById(R.id.lineChart1);
+                lineChart = findViewById(R.id.lineChart7);
+                nh3Chart = findViewById(R.id.lineChart7);
                 break;
 
             default :

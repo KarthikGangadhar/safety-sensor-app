@@ -74,11 +74,6 @@
                   android:text="@string/no_data"
                   android:textSize="18sp"/>
 
-        <!--        <com.jjoe64.graphview.GraphView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="200dip"-->
-<!--            android:id="@+id/graph" />-->
-
     </LinearLayout>
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
@@ -184,6 +179,82 @@
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart3"
+                android:layout_width="333dp"
+                android:layout_height="284dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            tools:ignore="HardcodedText" >
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gas Resistance"
+                android:textSize="18sp"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart4"
+                android:layout_width="333dp"
+                android:layout_height="284dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            tools:ignore="HardcodedText" >
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NO2: "
+                android:textSize="18sp"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart5"
+                android:layout_width="333dp"
+                android:layout_height="284dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            tools:ignore="HardcodedText" >
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NH3: "
+                android:textSize="18sp"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart6"
+                android:layout_width="333dp"
+                android:layout_height="284dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            tools:ignore="HardcodedText" >
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CO: "
+                android:textSize="18sp"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart7"
                 android:layout_width="333dp"
                 android:layout_height="284dp" />
 
