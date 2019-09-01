@@ -56,9 +56,6 @@ public class DeviceControlActivity extends Activity {
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
     private TextView mConnectionState;
-    private TextView mDataField;
-    private TextView mDataField1;
-    private TextView mDataField2;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -179,10 +176,6 @@ public class DeviceControlActivity extends Activity {
 
     private void clearUI() {
         mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-        mDataField.setText(R.string.no_data);
-        mDataField1.setText(R.string.no_data);
-        mDataField2.setText(R.string.no_data);
-//        graph.addSeries();
     }
 
     @Override
@@ -199,9 +192,6 @@ public class DeviceControlActivity extends Activity {
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
-        mDataField = (TextView) findViewById(R.id.data_value);
-        mDataField1 = (TextView) findViewById(R.id.data_value1);
-        mDataField2 = (TextView) findViewById(R.id.data_value2);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -274,9 +264,6 @@ public class DeviceControlActivity extends Activity {
         try {
             if (data != null) {
                 if(data.contains("Sensor") || data.contains("��") || data.contains("\n00 00")){
-                    mDataField.setText(data);
-                    mDataField1.setText(data);
-                    mDataField2.setText(data);
                 }else{
 //                    String[] result =  data.split("\r\n\n", 0);
 //                    String[] readings = result[0].split(",", 0);
@@ -296,16 +283,13 @@ public class DeviceControlActivity extends Activity {
                     String[] result1 = result[0].split(":",0);
 
                     if(result1[0].contentEquals("F")){
-                        mDataField.setText(result1[1]);
                         xvalue += 1.0;
                         String[] yvalue = result1[1].split(",",0);
                         if(plotData){
                             addEntry(resistanceChart , xvalue, parseFloat(yvalue[1]));
                             addEntry(tempChart , xvalue, parseFloat(yvalue[2]));
-//                            addEntry(humidityChart , xvalue, parseFloat(yvalue[1]));
                             plotData = false;
                         }
-                        mDataField1.setText(result1[1]);
                     }else if (result1[0].contentEquals("S")){
                         xvalue += 1.0;
                         String[] yvalue = result1[1].split(",",0);
@@ -314,9 +298,7 @@ public class DeviceControlActivity extends Activity {
                            addEntry(humidityChart , xvalue, parseFloat(yvalue[1]));
                            plotData = false;
                         }
-                        mDataField1.setText(result1[1]);
                     }else if (result1[0].contentEquals("M")){
-                        mDataField2.setText(result1[1]);
                         xvalue += 1.0;
                         String[] yvalue = result1[1].split(",",0);
                         if(plotData){
@@ -325,7 +307,6 @@ public class DeviceControlActivity extends Activity {
                             addEntry(coChart , xvalue, parseFloat(yvalue[2]));
                             plotData = false;
                         }
-                        mDataField1.setText(result1[1]);
                     }
 //                    mDataField.setText(data);
 //                    }else{
@@ -503,7 +484,7 @@ public class DeviceControlActivity extends Activity {
 
             case 6 :
                 lineChart = findViewById(R.id.lineChart6);
-                    coChart = findViewById(R.id.lineChart6);
+                coChart = findViewById(R.id.lineChart6);
                 break;
 
             case 7 :
@@ -560,13 +541,6 @@ public class DeviceControlActivity extends Activity {
         xl.setAvoidFirstLastClipping(true);
         xl.setEnabled(true);
 
-//        YAxis leftAxis = lineChart.getAxisLeft();
-//        leftAxis.setTextColor(Color.BLUE);
-//        leftAxis.setDrawGridLines(false);
-//        leftAxis.setAxisMaximum(10f);
-//        leftAxis.setAxisMinimum(0f);
-//        leftAxis.setDrawGridLines(true);
-
         YAxis rightAxis = lineChart.getAxisRight();
         rightAxis.setEnabled(false);
 
@@ -601,16 +575,6 @@ public class DeviceControlActivity extends Activity {
 
         thread.start();
     }
-
-//    private List<Entry> getDataSet(float xValue,float yValue) {
-////        private List<Entry> getDataSet(float x, float y ) {
-////        int x  = 0, y = 5;
-//        if(lineEntries.size() > 10){
-//            lineEntries.remove(0);
-//        }
-//        lineEntries.add(new Entry(xValue, yValue));
-//        return lineEntries;
-//    }
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
