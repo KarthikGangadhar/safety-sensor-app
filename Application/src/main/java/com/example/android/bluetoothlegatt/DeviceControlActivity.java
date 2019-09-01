@@ -524,16 +524,16 @@ public class DeviceControlActivity extends Activity {
 
         XAxis xl = lineChart.getXAxis();
         xl.setTextColor(Color.BLUE);
-        xl.setDrawGridLines(true);
+        xl.setDrawGridLines(false);
         xl.setAvoidFirstLastClipping(true);
         xl.setEnabled(true);
 
-        YAxis leftAxis = lineChart.getAxisLeft();
-        leftAxis.setTextColor(Color.BLUE);
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMaximum(10f);
-        leftAxis.setAxisMinimum(0f);
-        leftAxis.setDrawGridLines(true);
+//        YAxis leftAxis = lineChart.getAxisLeft();
+//        leftAxis.setTextColor(Color.BLUE);
+//        leftAxis.setDrawGridLines(false);
+//        leftAxis.setAxisMaximum(10f);
+//        leftAxis.setAxisMinimum(0f);
+//        leftAxis.setDrawGridLines(true);
 
         YAxis rightAxis = lineChart.getAxisRight();
         rightAxis.setEnabled(false);
