@@ -26,11 +26,13 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -68,6 +70,9 @@ public class DeviceControlActivity extends Activity {
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private List<Entry> lineEntries = new ArrayList<Entry>();
+    LineChart lineChart;
+    private Thread thread;
+    private boolean plotData = true;
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
@@ -88,6 +93,7 @@ public class DeviceControlActivity extends Activity {
             }
             // Automatically connects to the device upon successful start-up initialization.
             mBluetoothLeService.connect(mDeviceAddress);
+            drawLineChart(1, "RED", xvalue, 0, "Pressure");
         }
 
         @Override
@@ -286,10 +292,11 @@ public class DeviceControlActivity extends Activity {
                         mDataField.setText(result1[1]);
                     }else if (result1[0].contentEquals("S")){
                         xvalue += 1.0;
-//                        if(xvalue < 2){
                         String[] yvalue = result1[1].split(",",0);
-                        drawLineChart(1, "RED", xvalue, parseFloat(yvalue[0]), "Pressure");
-//                        }
+                        if(plotData){
+                           addEntry(xvalue, parseFloat(yvalue[0]));
+                        plotData = false;
+                        }
                         mDataField1.setText(result1[1]);
                     }else if (result1[0].contentEquals("M")){
                         mDataField2.setText(result1[1]);
@@ -331,6 +338,48 @@ public class DeviceControlActivity extends Activity {
         }
     }
 
+    private void addEntry(float xvalue, float yvalue) {
+        LineData data = lineChart.getData();
+
+        if (data != null) {
+
+            ILineDataSet set = data.getDataSetByIndex(0);
+
+            if (set == null) {
+                set = createSet();
+                data.addDataSet(set);
+            }
+
+            Log.d(TAG, "added xvalue: " + set.getEntryCount()+ ", yvalue: " + yvalue);
+            data.addEntry(new Entry(set.getEntryCount(), yvalue), 0);
+            data.notifyDataChanged();
+
+            // let the chart know it's data has changed
+            lineChart.notifyDataSetChanged();
+
+            // limit the number of visible entries
+            lineChart.setVisibleXRangeMaximum(15);
+            // mChart.setVisibleYRange(30, AxisDependency.LEFT);
+
+            // move to the latest entry
+            lineChart.moveViewToX(data.getEntryCount());
+
+        }
+    }
+
+    private LineDataSet createSet() {
+
+        LineDataSet set = new LineDataSet(null, "Pressure");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setLineWidth(3f);
+        set.setColor(Color.BLUE);
+        set.setHighlightEnabled(true);
+        set.setDrawValues(true);
+        set.setDrawCircles(false);
+        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setCubicIntensity(0.2f);
+        return set;
+    }
 
     // Method to display dialogue
     public AlertDialog showAlertDialog(Context context, String title, String message, String posBtnMsg, String negBtnMsg) {
@@ -414,43 +463,122 @@ public class DeviceControlActivity extends Activity {
 
 //    int chartId, String color, float xValue, float yValue
     private void drawLineChart(int chartId, String color,float xValue, float yValue, String name) {
-        LineChart lineChart = findViewById(R.id.lineChart);
-        List<Entry> lineEntries = getDataSet(xValue, yValue);
+          lineChart = findViewById(R.id.lineChart);
+
+//        List<Entry> lineEntries = getDataSet(xValue, yValue);
 //        List<Entry> lineEntries = getDataSet();
-        LineDataSet lineDataSet = new LineDataSet(lineEntries, name);
-        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-        lineDataSet.setHighlightEnabled(true);
-        lineDataSet.setLineWidth(2);
-        lineDataSet.setColor(Color.RED);
-        lineDataSet.setCircleColor(Color.YELLOW);
-        lineDataSet.setCircleRadius(6);
-        lineDataSet.setCircleHoleRadius(3);
-        lineDataSet.setDrawHighlightIndicators(true);
-        lineDataSet.setHighLightColor(Color.RED);
-        lineDataSet.setValueTextSize(12);
-        lineDataSet.setValueTextColor(Color.DKGRAY);
+//        LineDataSet lineDataSet = new LineDataSet(lineEntries, name);
+//        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+//        lineDataSet.setHighlightEnabled(true);
+//        lineDataSet.setLineWidth(2);
+//        lineDataSet.setColor(Color.RED);
+//        lineDataSet.setCircleColor(Color.YELLOW);
+//        lineDataSet.setCircleRadius(6);
+//        lineDataSet.setCircleHoleRadius(3);
+//        lineDataSet.setDrawHighlightIndicators(true);
+//        lineDataSet.setHighLightColor(Color.RED);
+//        lineDataSet.setValueTextSize(12);
+//        lineDataSet.setValueTextColor(Color.DKGRAY);
+//
+//        LineData lineData = new LineData(lineDataSet);
+//        lineChart.getDescription().setText(getString(R.string.price_from_last_10_seconds));
+//        lineChart.getDescription().setTextSize(12);
+//        lineChart.setDrawMarkers(true);
+//        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTH_SIDED);
+//        lineChart.animateY(1000);
+//        lineChart.getXAxis().setGranularityEnabled(true);
+//        lineChart.getXAxis().setGranularity(1.0f);
+//        lineChart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
+//        lineChart.setData(lineData);
 
-        LineData lineData = new LineData(lineDataSet);
-        lineChart.getDescription().setText(getString(R.string.price_from_last_10_seconds));
-        lineChart.getDescription().setTextSize(12);
-        lineChart.setDrawMarkers(true);
-        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTH_SIDED);
-        lineChart.animateY(1000);
-        lineChart.getXAxis().setGranularityEnabled(true);
-        lineChart.getXAxis().setGranularity(1.0f);
-        lineChart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
-        lineChart.setData(lineData);
+        // enable description text
+        lineChart.getDescription().setEnabled(true);
+        lineChart.getDescription().setText("Real Time Pressure Plot");
+
+        // enable touch gestures
+        lineChart.setTouchEnabled(false);
+
+        // enable scaling and dragging
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setDrawGridBackground(true);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        lineChart.setPinchZoom(true);
+
+        // set an alternative background color
+        lineChart.setBackgroundColor(Color.WHITE);
+
+        LineData data = new LineData();
+        data.setValueTextColor(Color.BLACK);
+
+        // add empty data
+        lineChart.setData(data);
+
+        // get the legend (only possible after setting data)
+        Legend l = lineChart.getLegend();
+
+        // modify the legend ...
+        l.setForm(Legend.LegendForm.LINE);
+        l.setTextColor(Color.BLACK);
+
+        XAxis xl = lineChart.getXAxis();
+        xl.setTextColor(Color.BLUE);
+        xl.setDrawGridLines(true);
+        xl.setAvoidFirstLastClipping(true);
+        xl.setEnabled(true);
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setTextColor(Color.BLUE);
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setAxisMaximum(10f);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        lineChart.getAxisLeft().setDrawGridLines(false);
+        lineChart.getXAxis().setDrawGridLines(false);
+        lineChart.setDrawBorders(false);
+
+        feedMultiple();
     }
 
-    private List<Entry> getDataSet(float xValue,float yValue) {
-//        private List<Entry> getDataSet(float x, float y ) {
-//        int x  = 0, y = 5;
-        if(lineEntries.size() > 10){
-            lineEntries.remove(0);
+    private void feedMultiple() {
+
+        if (thread != null){
+            thread.interrupt();
         }
-        lineEntries.add(new Entry(xValue, yValue));
-        return lineEntries;
+
+        thread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (true){
+                    plotData = true;
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        thread.start();
     }
+
+//    private List<Entry> getDataSet(float xValue,float yValue) {
+////        private List<Entry> getDataSet(float x, float y ) {
+////        int x  = 0, y = 5;
+//        if(lineEntries.size() > 10){
+//            lineEntries.remove(0);
+//        }
+//        lineEntries.add(new Entry(xValue, yValue));
+//        return lineEntries;
+//    }
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
