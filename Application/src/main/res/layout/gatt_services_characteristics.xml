@@ -132,16 +132,24 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        tools:ignore="HardcodedText" >
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+            android:text="Pressure: "
+            android:textSize="18sp"/>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChart1"
+            android:layout_width="333dp"
+            android:layout_height="284dp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -150,13 +158,37 @@
         android:orientation="vertical"
         tools:ignore="HardcodedText" >
 
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Temparature: "
+            android:textSize="18sp"/>
+
         <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChart1"
+            android:id="@+id/lineChart2"
             android:layout_width="333dp"
             android:layout_height="284dp" />
 
     </LinearLayout>
-        
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            tools:ignore="HardcodedText" >
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Humidity: "
+                android:textSize="18sp"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart3"
+                android:layout_width="333dp"
+                android:layout_height="284dp" />
+
+        </LinearLayout>
+
         <ExpandableListView
             android:id="@+id/gatt_services_list"
             android:layout_width="match_parent"

@@ -59,8 +59,6 @@ public class DeviceControlActivity extends Activity {
     private TextView mDataField;
     private TextView mDataField1;
     private TextView mDataField2;
-    private GraphView graph;
-    private LineChart chart;//(LineChart) findViewById(R.id.chart);
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -70,7 +68,14 @@ public class DeviceControlActivity extends Activity {
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private List<Entry> lineEntries = new ArrayList<Entry>();
-    LineChart lineChart;
+    LineChart pressureChart;
+    LineChart tempChart;
+    LineChart humidityChart;
+    LineChart heightChart;
+    LineChart no2Chart;
+    LineChart coChart;
+    LineChart nh3Chart;
+
     private Thread thread;
     private boolean plotData = true;
 
@@ -93,13 +98,9 @@ public class DeviceControlActivity extends Activity {
             }
             // Automatically connects to the device upon successful start-up initialization.
             mBluetoothLeService.connect(mDeviceAddress);
-            drawLineChart(1, "RED", xvalue, 0, "Pressure");
-//            drawLineChart(2, "RED", xvalue, 0, "Temparature");
-//            drawLineChart(3, "RED", xvalue, 0, "Humidity");
-//            drawLineChart(4, "RED", xvalue, 0, "VOC");
-//            drawLineChart(5, "RED", xvalue, 0, "NO2");
-//            drawLineChart(6, "RED", xvalue, 0, "CO");
-//            drawLineChart(7, "RED", xvalue, 0, "NH3");
+            drawLineChart(1, "RED", xvalue, 0, "Pressure", "Realtime Pressure Plot");
+            drawLineChart(2, "RED", xvalue, 0, "Temparature", "Realtime Temparature Plot");
+            drawLineChart(3, "RED", xvalue, 0, "Humidity", "Realtime Humidity Plot");
         }
 
         @Override
@@ -197,7 +198,7 @@ public class DeviceControlActivity extends Activity {
         mDataField1 = (TextView) findViewById(R.id.data_value1);
         mDataField2 = (TextView) findViewById(R.id.data_value2);
         //        graph = (GraphView) findViewById(R.id.graph);
-        chart = (LineChart) findViewById(R.id.chart);
+//        chart = (LineChart) findViewById(R.id.chart);
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
@@ -267,9 +268,6 @@ public class DeviceControlActivity extends Activity {
 
     private void displayData(String data, Context context) {
         try {
-            LineGraphSeries<DataPoint> series;
-            LineChart chart = new LineChart(context);
-            
             if (data != null) {
                 if(data.contains("Sensor") || data.contains("��") || data.contains("\n00 00")){
                     mDataField.setText(data);
@@ -294,28 +292,28 @@ public class DeviceControlActivity extends Activity {
                     String[] result1 = result[0].split(":",0);
 
                     if(result1[0].contentEquals("F")){
-
                         mDataField.setText(result1[1]);
+                        xvalue += 1.0;
+                        String[] yvalue = result1[1].split(",",0);
+                        if(plotData){
+                            addEntry(tempChart , xvalue, parseFloat(yvalue[2]));
+//                            addEntry(humidityChart , xvalue, parseFloat(yvalue[1]));
+                            plotData = false;
+                        }
+                        mDataField1.setText(result1[1]);
                     }else if (result1[0].contentEquals("S")){
                         xvalue += 1.0;
                         String[] yvalue = result1[1].split(",",0);
                         if(plotData){
-                           addEntry(xvalue, parseFloat(yvalue[0]));
-                        plotData = false;
+                           addEntry(pressureChart , xvalue, parseFloat(yvalue[0]));
+                           addEntry(humidityChart , xvalue, parseFloat(yvalue[1]));
+                           plotData = false;
                         }
                         mDataField1.setText(result1[1]);
                     }else if (result1[0].contentEquals("M")){
                         mDataField2.setText(result1[1]);
                     }
-
 //                    mDataField.setText(data);
-//                        series = new LineGraphSeries<>(new DataPoint[] {
-//                                new DataPoint(0, 1),
-//                                new DataPoint(1, 5),
-//                                new DataPoint(2, 3),
-//                                new DataPoint(3, 2),
-//                                new DataPoint(4, 6)
-//                        });
 //                    }else{
 //                        Float NormalizedData = ((value - Average) / Average ) * 100;
 //                        NormalizedData = NormalizedData < 0 ? NormalizedData * -1 : NormalizedData;
@@ -327,15 +325,7 @@ public class DeviceControlActivity extends Activity {
 //                            }
 //                            ringtone.play();
 //                        }
-////                        series = new LineGraphSeries<>(new DataPoint[] {
-////                                new DataPoint(0, 1),
-////                                new DataPoint(1, 5),
-////                                new DataPoint(2, 3),
-////                                new DataPoint(3, 2),
-////                                new DataPoint(4, 6)
-////                        });
 //                    }
-//                    graph.addSeries(series);
                 }
 
             }
@@ -344,8 +334,8 @@ public class DeviceControlActivity extends Activity {
         }
     }
 
-    private void addEntry(float xvalue, float yvalue) {
-        LineData data = lineChart.getData();
+    private void addEntry(LineChart chart, float xvalue, float yvalue) {
+        LineData data = chart.getData();
 
         if (data != null) {
 
@@ -361,14 +351,14 @@ public class DeviceControlActivity extends Activity {
             data.notifyDataChanged();
 
             // let the chart know it's data has changed
-            lineChart.notifyDataSetChanged();
+            chart.notifyDataSetChanged();
 
             // limit the number of visible entries
-            lineChart.setVisibleXRangeMaximum(15);
+            chart.setVisibleXRangeMaximum(15);
             // mChart.setVisibleYRange(30, AxisDependency.LEFT);
 
             // move to the latest entry
-            lineChart.moveViewToX(data.getEntryCount());
+            chart.moveViewToX(data.getEntryCount());
 
         }
     }
@@ -378,7 +368,7 @@ public class DeviceControlActivity extends Activity {
         LineDataSet set = new LineDataSet(null, "Pressure");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setLineWidth(3f);
-        set.setColor(Color.GREEN);
+        set.setColor(Color.GRAY);
         set.setHighlightEnabled(true);
         set.setDrawValues(true);
         set.setDrawCircles(false);
@@ -467,13 +457,61 @@ public class DeviceControlActivity extends Activity {
         mGattServicesList.setAdapter(gattServiceAdapter);
     }
 
-//    int chartId, String color, float xValue, float yValue
-    private void drawLineChart(int chartId, String color,float xValue, float yValue, String name) {
-        lineChart = findViewById(R.id.lineChart1);
+    private LineChart getChart(int chartId){
+        LineChart lineChart;
+        switch(chartId)
+        {
+            // values must be of same type of expression
+            case 1 :
+                lineChart = findViewById(R.id.lineChart1);
+                pressureChart = findViewById(R.id.lineChart1);
+                break;
 
+            case 2 :
+                lineChart = findViewById(R.id.lineChart2);
+                tempChart = findViewById(R.id.lineChart2);
+                break;
+
+            case 3 :
+                lineChart = findViewById(R.id.lineChart3);
+                humidityChart = findViewById(R.id.lineChart3);
+                break;
+
+            case 4 :
+                lineChart = findViewById(R.id.lineChart1);
+                heightChart = findViewById(R.id.lineChart1);
+                break;
+
+            case 5 :
+                lineChart = findViewById(R.id.lineChart1);
+                no2Chart = findViewById(R.id.lineChart1);
+                break;
+
+            case 6 :
+                lineChart = findViewById(R.id.lineChart1);
+                coChart = findViewById(R.id.lineChart1);
+                break;
+
+            case 7 :
+                lineChart = findViewById(R.id.lineChart1);
+                nh3Chart = findViewById(R.id.lineChart1);
+                break;
+
+            default :
+                lineChart = findViewById(R.id.lineChart1);
+                pressureChart = findViewById(R.id.lineChart1);
+
+        }
+        return  lineChart;
+    }
+
+//    int chartId, String color, float xValue, float yValue
+    private void drawLineChart(int chartId, String color,float xValue, float yValue, String name, String description) {
+
+        LineChart lineChart = getChart(chartId);
         // enable description text
         lineChart.getDescription().setEnabled(true);
-        lineChart.getDescription().setText("Real Time Pressure Plot");
+        lineChart.getDescription().setText(description);
 
         // enable touch gestures
         lineChart.setTouchEnabled(false);
