@@ -71,6 +71,18 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BME680 Response"
+                android:layout_gravity="center"
+                android:textSize="18sp"/>
+
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_gravity="center"
+            android:textSize="18sp"/>
+
         <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -195,6 +207,17 @@
             <Space android:layout_width="5dp"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
+
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MICS6814 Response"
+            android:layout_gravity="center"
+            android:textSize="18sp"/>
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_gravity="center"
+            android:textSize="18sp"/>
 
         <LinearLayout
             android:layout_width="fill_parent"
