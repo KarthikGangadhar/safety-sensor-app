@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
@@ -56,7 +57,7 @@ public class DeviceControlActivity extends Activity {
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
-    private TextView mConnectionState;
+//    private TextView mConnectionState;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -190,10 +191,10 @@ public class DeviceControlActivity extends Activity {
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
         // Sets up UI references.
-        ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
+//        ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
-        mConnectionState = (TextView) findViewById(R.id.connection_state);
+//        mConnectionState = (TextView) findViewById(R.id.connection_state);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -257,7 +258,7 @@ public class DeviceControlActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mConnectionState.setText(resourceId);
+//                mConnectionState.setText(resourceId);
             }
         });
     }
@@ -586,7 +587,17 @@ public class DeviceControlActivity extends Activity {
     public void onClickWrite(View v){
         if(mBluetoothLeService != null) {
 //            mBluetoothLeService.writeCustomCharacteristic(0xAA);
-            showGraph = true;
+            Button btn = (Button) findViewById(R.id.button2);
+            //set button's new text programmatically
+            //setText() method allow us to set a widget's displayed text
+            if(showGraph){
+                btn.setText("Start Scan");
+                showGraph = false;
+            }else{
+                btn.setText("Stop Scan");
+                showGraph = true;
+            }
+
         }
 //        if (mGattCharacteristics != null) {
 //            final BluetoothGattCharacteristic characteristic =
