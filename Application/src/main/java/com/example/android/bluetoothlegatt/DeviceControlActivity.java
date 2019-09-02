@@ -2,6 +2,9 @@ package com.example.android.bluetoothlegatt;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
@@ -12,11 +15,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -84,6 +89,7 @@ public class DeviceControlActivity extends Activity {
     private final String LIST_UUID = "UUID";
     private AlertDialog dialog = null;
     private Ringtone ringtone = null;
+    MediaPlayer mp= null;
     private Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
     // Code to manage Service lifecycle.
@@ -191,10 +197,8 @@ public class DeviceControlActivity extends Activity {
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
         // Sets up UI references.
-//        ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
-//        mConnectionState = (TextView) findViewById(R.id.connection_state);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -268,11 +272,6 @@ public class DeviceControlActivity extends Activity {
             if (data != null) {
                 if(data.contains("Sensor") || data.contains("��") || data.contains("\n00 00")){
                 }else{
-//                    String[] result =  data.split("\r\n\n", 0);
-//                    String[] readings = result[0].split(",", 0);
-//                    Float Average = Float.parseFloat(readings[0]);
-//                    Float value = Float.parseFloat(readings[1]);
-//                    if(Average <= 0.00){
                     try {
                         if(showGraph){
                             String[] result;
@@ -289,7 +288,7 @@ public class DeviceControlActivity extends Activity {
 
                                 if(dataSplit[0].contentEquals("F")){
                                     String[] yvalue = dataSplit[1].split(",",0);
-                                    addEntry(resistanceChart , parseFloat(yvalue[1]), "CO2");
+                                    handleGasResistance(parseFloat( yvalue[0]), parseFloat(yvalue[1]), context);
                                     addEntry(tempChart , parseFloat(yvalue[2]), "Temparature");
                                 }else if (dataSplit[0].contentEquals("S")){
                                     String[] yvalue = dataSplit[1].split(",",0);
@@ -307,27 +306,51 @@ public class DeviceControlActivity extends Activity {
                     }catch (Exception e){
                         Log.d(TAG, e.getMessage());
                     }
-//                    mDataField.setText(data);
-//                    }else{
-//                        Float NormalizedData = ((value - Average) / Average ) * 100;
-//                        NormalizedData = NormalizedData < 0 ? NormalizedData * -1 : NormalizedData;
-//                        mDataField.setText(NormalizedData.toString());
-//                        if(NormalizedData >= 30.0){
-//                            if (dialog != null && dialog.isShowing()) {
-//                            } else {
-//                                dialog = showAlertDialog(context, "AQMS-Lite", "CO2 levels increased, its harmful to your health", "Cancel", "OK");
-//                            }
-//                            ringtone.play();
-//                        }
-//                    }
                 }
-
             }
         }catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private  void  handleGasResistance(float Avg, float VOC, Context context){
+        if(Avg > 0){
+            Float NormalizedData = ((VOC - Avg) / VOC ) * 100;
+            NormalizedData = NormalizedData < 0 ? NormalizedData * -1 : NormalizedData;
+            addEntry(resistanceChart , NormalizedData, "CO2");
+            if(NormalizedData >= 30.0){
+                if (dialog != null && dialog.isShowing()) {
+                } else {
+                    dialog = showAlertDialog(context, "Safety Sensor", "CO2 level is increased, its harmful to your health", "Cancel", "OK");
+                }
+                playNotification(context);
+            }
+        }else{
+            addEntry(resistanceChart , VOC, "CO2");
+        }
+
+    }
+
+    private  void playNotification(Context context){
+        Intent i = new Intent(this, context.getClass());
+        PendingIntent pi = PendingIntent.getActivity(context, 0, i,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setContentTitle("Safety Sensor Alert")
+                .setContentText("The CO2 level is increased, its harmful to your health")
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .setDefaults(Notification.FLAG_ONLY_ALERT_ONCE);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mp= MediaPlayer.create(context, R.raw.alert);
+        if(!mp.isPlaying()){
+            mp.start();
+        }
+//        mp.pause();
+        manager.notify(73195, builder.build());
+    }
     private void addEntry(LineChart chart, float yvalue, String type) {
         LineData data = chart.getData();
 
@@ -456,11 +479,6 @@ public class DeviceControlActivity extends Activity {
         switch(chartId)
         {
             // values must be of same type of expression
-            case 1 :
-                lineChart = findViewById(R.id.lineChart1);
-                pressureChart = findViewById(R.id.lineChart1);
-                break;
-
             case 2 :
                 lineChart = findViewById(R.id.lineChart2);
                 tempChart = findViewById(R.id.lineChart2);
