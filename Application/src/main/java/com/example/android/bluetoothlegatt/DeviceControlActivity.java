@@ -40,6 +40,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import static java.lang.Float.parseFloat;
 
@@ -65,6 +66,7 @@ public class DeviceControlActivity extends Activity {
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private List<Entry> lineEntries = new ArrayList<Entry>();
+
     LineChart pressureChart;
     LineChart tempChart;
     LineChart humidityChart;
@@ -75,12 +77,12 @@ public class DeviceControlActivity extends Activity {
 
     private Thread thread;
     private boolean plotData = true;
+    private boolean showGraph = false;
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
     private AlertDialog dialog = null;
     private Ringtone ringtone = null;
-    private float xvalue = 0;
     private Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
     // Code to manage Service lifecycle.
@@ -95,13 +97,13 @@ public class DeviceControlActivity extends Activity {
             }
             // Automatically connects to the device upon successful start-up initialization.
             mBluetoothLeService.connect(mDeviceAddress);
-            drawLineChart(1, "RED", xvalue, 0, "Pressure", "Realtime Pressure Plot");
-            drawLineChart(2, "RED", xvalue, 0, "Temparature", "Realtime Temparature Plot");
-            drawLineChart(3, "RED", xvalue, 0, "Humidity", "Realtime Humidity Plot");
-            drawLineChart(4, "RED", xvalue, 0, "Resistance", "Realtime Resistance Plot");
-            drawLineChart(5, "RED", xvalue, 0, "NO2", "Realtime NO2 Plot");
-            drawLineChart(6, "RED", xvalue, 0, "NH3", "Realtime NH3 Plot");
-            drawLineChart(7, "RED", xvalue, 0, "CO", "Realtime CO Plot");
+            drawLineChart(1, "Pressure", " hPa (hectopascal: 100 x 1 pascal)");
+            drawLineChart(2, "Temparature", " °C (Degree Celsius)");
+            drawLineChart(3, "Humidity", " % (Percentage)");
+            drawLineChart(4, "Resistance", "Normalized Plot");
+            drawLineChart(5, "NO2", "Analog Value Plot");
+            drawLineChart(6, "NH3", "Analog Value Plot");
+            drawLineChart(7, "CO", "Analog Value Plot");
 
         }
 
@@ -270,43 +272,39 @@ public class DeviceControlActivity extends Activity {
 //                    Float Average = Float.parseFloat(readings[0]);
 //                    Float value = Float.parseFloat(readings[1]);
 //                    if(Average <= 0.00){
-                    String[] result;
+                    try {
+                        if(showGraph){
+                            String[] result;
+                            if (data.contains("\r\n\r")){
+                                result =  data.split("\r\n", 0);
+                            }else if(data.contains("\n")){
+                                result =  data.split("\n", 0);
+                            }else{
+                                result =  data.split("\n", 0);
+                            }
 
-                    if (data.contains("\r\n\r")){
-                        result =  data.split("\r\n", 0);
-                    }else if(data.contains("\n")){
-                        result =  data.split("\n", 0);
-                    }else{
-                        result =  data.split("\n", 0);
-                    }
+                            if(result != null && result.length >1 && plotData){
+                                String[] dataSplit = result[0].split(":",0);
 
-                    String[] result1 = result[0].split(":",0);
-
-                    if(result1[0].contentEquals("F")){
-                        xvalue += 1.0;
-                        String[] yvalue = result1[1].split(",",0);
-                        if(plotData){
-                            addEntry(resistanceChart , xvalue, parseFloat(yvalue[1]));
-                            addEntry(tempChart , xvalue, parseFloat(yvalue[2]));
-                            plotData = false;
+                                if(dataSplit[0].contentEquals("F")){
+                                    String[] yvalue = dataSplit[1].split(",",0);
+                                    addEntry(resistanceChart , parseFloat(yvalue[1]), "CO2");
+                                    addEntry(tempChart , parseFloat(yvalue[2]), "Temparature");
+                                }else if (dataSplit[0].contentEquals("S")){
+                                    String[] yvalue = dataSplit[1].split(",",0);
+                                    addEntry(pressureChart , parseFloat(yvalue[0]), "Pressure");
+                                    addEntry(humidityChart , parseFloat(yvalue[1]), "Humidity");
+                                }else if (dataSplit[0].contentEquals("M")){
+                                    String[] yvalue = dataSplit[1].split(",",0);
+                                    addEntry(no2Chart , parseFloat(yvalue[0]), "NO2");
+                                    addEntry(nh3Chart , parseFloat(yvalue[1]), "NH3");
+                                    addEntry(coChart , parseFloat(yvalue[2]), "CO");
+                                }
+                                plotData = false;
+                            }
                         }
-                    }else if (result1[0].contentEquals("S")){
-                        xvalue += 1.0;
-                        String[] yvalue = result1[1].split(",",0);
-                        if(plotData){
-                           addEntry(pressureChart , xvalue, parseFloat(yvalue[0]));
-                           addEntry(humidityChart , xvalue, parseFloat(yvalue[1]));
-                           plotData = false;
-                        }
-                    }else if (result1[0].contentEquals("M")){
-                        xvalue += 1.0;
-                        String[] yvalue = result1[1].split(",",0);
-                        if(plotData){
-                            addEntry(no2Chart , xvalue, parseFloat(yvalue[0]));
-                            addEntry(nh3Chart , xvalue, parseFloat(yvalue[1]));
-                            addEntry(coChart , xvalue, parseFloat(yvalue[2]));
-                            plotData = false;
-                        }
+                    }catch (Exception e){
+                        Log.d(TAG, e.getMessage());
                     }
 //                    mDataField.setText(data);
 //                    }else{
@@ -329,7 +327,7 @@ public class DeviceControlActivity extends Activity {
         }
     }
 
-    private void addEntry(LineChart chart, float xvalue, float yvalue) {
+    private void addEntry(LineChart chart, float yvalue, String type) {
         LineData data = chart.getData();
 
         if (data != null) {
@@ -337,7 +335,7 @@ public class DeviceControlActivity extends Activity {
             ILineDataSet set = data.getDataSetByIndex(0);
 
             if (set == null) {
-                set = createSet();
+                set = createSet(type);
                 data.addDataSet(set);
             }
 
@@ -358,9 +356,9 @@ public class DeviceControlActivity extends Activity {
         }
     }
 
-    private LineDataSet createSet() {
+    private LineDataSet createSet(String type) {
 
-        LineDataSet set = new LineDataSet(null, "Pressure");
+        LineDataSet set = new LineDataSet(null, type);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setLineWidth(3f);
         set.setColor(Color.GRAY);
@@ -501,7 +499,7 @@ public class DeviceControlActivity extends Activity {
     }
 
 //    int chartId, String color, float xValue, float yValue
-    private void drawLineChart(int chartId, String color,float xValue, float yValue, String name, String description) {
+    private void drawLineChart(int chartId, String name, String description) {
 
         LineChart lineChart = getChart(chartId);
         // enable description text
@@ -583,5 +581,56 @@ public class DeviceControlActivity extends Activity {
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
+    }
+
+    public void onClickWrite(View v){
+        if(mBluetoothLeService != null) {
+//            mBluetoothLeService.writeCustomCharacteristic(0xAA);
+            showGraph = true;
+        }
+//        if (mGattCharacteristics != null) {
+//            final BluetoothGattCharacteristic characteristic =
+//                    mGattCharacteristics.get(groupPosition).get(childPosition);
+//            final int charaProp = characteristic.getProperties();
+//            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+//                // If there is an active notification on a characteristic, clear
+//                // it first so it doesn't update the data field on the user interface.
+//                if (mNotifyCharacteristic != null) {
+//                    mBluetoothLeService.setCharacteristicNotification(
+//                            mNotifyCharacteristic, false);
+//                    mNotifyCharacteristic = null;
+//                }
+//                mBluetoothLeService.readCharacteristic(characteristic);
+//            }
+//            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+//                mNotifyCharacteristic = characteristic;
+//                mBluetoothLeService.setCharacteristicNotification(
+//                        characteristic, true);
+//            }
+//            return true;
+//        }
+
+//        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+//            Log.w(TAG, "BluetoothAdapter not initialized");
+//            return;
+//        }
+//        /*check if the service is available on the device*/
+//        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("d973f2e0-b19e-11e2-9e96-0800200c9a66"));
+//        if(mCustomService == null){
+//            Log.w(TAG, "Custom BLE Service not found");
+//            return;
+//        }
+//        /*get the read characteristic from the service*/
+//        BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString("d973f2e1-b19e-11e2-9e96-0800200c9a66"));
+//        mWriteCharacteristic.setValue(value,android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8,0);
+//        if(mBluetoothGatt.writeCharacteristic(mWriteCharacteristic) == false){
+//            Log.w(TAG, "Failed to write characteristic");
+//        }
+    }
+
+    public void onClickRead(View v){
+        if(mBluetoothLeService != null) {
+            mBluetoothLeService.readCustomCharacteristic();
+        }
     }
 }

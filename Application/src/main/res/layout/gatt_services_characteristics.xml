@@ -41,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"/>
     </LinearLayout>
+
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
@@ -58,7 +59,19 @@
                   android:textSize="18sp"/>
     </LinearLayout>
 
-    <LinearLayout
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"/>
+            <Space android:layout_width="5dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#ffffff"
@@ -70,6 +83,7 @@
             android:text="Pressure: "
             android:textSize="18sp"/>
 
+
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/lineChart1"
             android:layout_width="333dp"
@@ -77,7 +91,19 @@
 
     </LinearLayout>
 
-    <LinearLayout
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"/>
+            <Space android:layout_width="5dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#ffffff"
@@ -96,6 +122,18 @@
 
     </LinearLayout>
 
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"/>
+            <Space android:layout_width="5dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -113,6 +151,18 @@
                 android:layout_width="333dp"
                 android:layout_height="284dp" />
 
+        </LinearLayout>
+
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"/>
+            <Space android:layout_width="5dp"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <LinearLayout
@@ -134,6 +184,18 @@
 
         </LinearLayout>
 
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"/>
+            <Space android:layout_width="5dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -153,24 +215,18 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:background="#ffffff"
-            android:orientation="vertical"
-            tools:ignore="HardcodedText" >
-
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
             <TextView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NH3: "
+                android:text=""
                 android:textSize="18sp"/>
-
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lineChart6"
-                android:layout_width="333dp"
-                android:layout_height="284dp" />
-
+            <Space android:layout_width="5dp"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -185,16 +241,91 @@
                 android:textSize="18sp"/>
 
             <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart6"
+                android:layout_width="333dp"
+                android:layout_height="284dp" />
+
+        </LinearLayout>
+
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"/>
+            <Space android:layout_width="5dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            tools:ignore="HardcodedText" >
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NH3: "
+                android:textSize="18sp"/>
+
+            <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart7"
                 android:layout_width="333dp"
                 android:layout_height="284dp" />
 
         </LinearLayout>
 
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"/>
+            <Space android:layout_width="5dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            tools:ignore="HardcodedText" >
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start Scan"
+                android:id="@+id/button2"
+                android:onClick="onClickWrite" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Calibrate"
+                android:id="@+id/button"
+                android:onClick="onClickRead" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_data"
+                android:id="@+id/data_value" />
+
+        </LinearLayout>
+
         <ExpandableListView
             android:id="@+id/gatt_services_list"
-            android:layout_width="match_parent"
-            android:layout_height="363dp" />
-</LinearLayout>
+            android:layout_width="348dp"
+            android:layout_height="519dp" />
+
+    </LinearLayout>
+
 
 </ScrollView>
