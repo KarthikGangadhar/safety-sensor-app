@@ -617,44 +617,6 @@ public class DeviceControlActivity extends Activity {
             }
 
         }
-//        if (mGattCharacteristics != null) {
-//            final BluetoothGattCharacteristic characteristic =
-//                    mGattCharacteristics.get(groupPosition).get(childPosition);
-//            final int charaProp = characteristic.getProperties();
-//            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
-//                // If there is an active notification on a characteristic, clear
-//                // it first so it doesn't update the data field on the user interface.
-//                if (mNotifyCharacteristic != null) {
-//                    mBluetoothLeService.setCharacteristicNotification(
-//                            mNotifyCharacteristic, false);
-//                    mNotifyCharacteristic = null;
-//                }
-//                mBluetoothLeService.readCharacteristic(characteristic);
-//            }
-//            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-//                mNotifyCharacteristic = characteristic;
-//                mBluetoothLeService.setCharacteristicNotification(
-//                        characteristic, true);
-//            }
-//            return true;
-//        }
-
-//        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-//            Log.w(TAG, "BluetoothAdapter not initialized");
-//            return;
-//        }
-//        /*check if the service is available on the device*/
-//        BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString("d973f2e0-b19e-11e2-9e96-0800200c9a66"));
-//        if(mCustomService == null){
-//            Log.w(TAG, "Custom BLE Service not found");
-//            return;
-//        }
-//        /*get the read characteristic from the service*/
-//        BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString("d973f2e1-b19e-11e2-9e96-0800200c9a66"));
-//        mWriteCharacteristic.setValue(value,android.bluetooth.BluetoothGattCharacteristic.FORMAT_UINT8,0);
-//        if(mBluetoothGatt.writeCharacteristic(mWriteCharacteristic) == false){
-//            Log.w(TAG, "Failed to write characteristic");
-//        }
     }
 
     public void onClickRead(View v){
