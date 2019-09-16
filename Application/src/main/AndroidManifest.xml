@@ -18,16 +18,26 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
+    <!--        <activity android:name=".DeviceScanActivity"-->
     <application android:hardwareAccelerated="true"
         android:label="Safety Sensor"
-        android:icon="@drawable/ic_launcher"
-        android:theme="@android:style/Theme.Holo.Light">
+        android:icon="@drawable/ic_launcher">
+<!--        android:theme="@android:style/Theme.Base">-->
+        <!--        android:theme="@android:style/Theme.Holo.Light">-->
+
+        <activity android:name=".MainActivity">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent-filter>
+        </activity>
+<!--        <activity android:name=".DeviceScanActivity"-->
         <activity android:name=".DeviceScanActivity"
             android:label="Safety Sensor">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--            </intent-filter>-->
         </activity>
         <activity android:name=".DeviceControlActivity"/>
         <service android:name=".BluetoothLeService" android:enabled="true"/>
