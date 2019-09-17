@@ -75,6 +75,10 @@ public class DeviceControlActivity extends Activity {
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private List<Entry> lineEntries = new ArrayList<Entry>();
+    private StringBuilder data = new StringBuilder();
+    private String[] dataArray;
+    private int index = 0;
+    private StringBuilder dataLine = new StringBuilder();
 
     LineChart pressureChart;
     LineChart tempChart;
@@ -288,17 +292,23 @@ public class DeviceControlActivity extends Activity {
 
                             if(result != null && result.length >1 && plotData){
                                 String[] dataSplit = result[0].split(":",0);
-
+                                // F:VOC,Temperature,S:Pressure, Humidity,M:NO2,NH3,CO
                                 if(dataSplit[0].contentEquals("F")){
                                     String[] yvalue = dataSplit[1].split(",",0);
+                                    dataLine.append(dataSplit[1]).append(",");
                                     handleGasResistance(parseFloat( yvalue[0]), parseFloat(yvalue[1]), context);
                                     addEntry(tempChart , parseFloat(yvalue[2]), "Temparature");
                                 }else if (dataSplit[0].contentEquals("S")){
                                     String[] yvalue = dataSplit[1].split(",",0);
+                                    dataLine.append(dataSplit[1]).append(",");
                                     addEntry(pressureChart , parseFloat(yvalue[0]), "Pressure");
                                     addEntry(humidityChart , parseFloat(yvalue[1]), "Humidity");
                                 }else if (dataSplit[0].contentEquals("M")){
                                     String[] yvalue = dataSplit[1].split(",",0);
+                                    dataLine.append(dataSplit[1]).append("\n");
+                                    dataArray[index] = dataLine.toString();
+                                    index += 1;
+                                    dataLine = new StringBuilder();
                                     addEntry(no2Chart , parseFloat(yvalue[0]), "NO2");
                                     addEntry(nh3Chart , parseFloat(yvalue[1]), "NH3");
                                     addEntry(coChart , parseFloat(yvalue[2]), "CO");
@@ -631,10 +641,14 @@ public class DeviceControlActivity extends Activity {
     public void export(View view){
         //generate data
         StringBuilder data = new StringBuilder();
-        data.append("Time,Distance");
-        for(int i = 0; i<5; i++){
-            data.append("\n"+String.valueOf(i)+","+String.valueOf(i*i));
+        // F:VOC,Temperature,S:Pressure, Humidity,M:NO2,NH3,CO
+        data.append("VOC(KOhm),Temperature(°C),Pressure(hpa),Humidity(%),NO2(Analog value),NH3(Analog value),CO(Analog value)");
+        for(int i = 0; i<index; i++){
+            data.append(dataArray[i]);
         }
+
+        dataArray = new String[1000];
+        index = 0;
 
         try{
             //saving the file into device
@@ -642,6 +656,7 @@ public class DeviceControlActivity extends Activity {
             out.write((data.toString()).getBytes());
             out.close();
 
+            data = new StringBuilder();
             //exporting
             Context context = getApplicationContext();
             File filelocation = new File(getFilesDir(), "data.csv");

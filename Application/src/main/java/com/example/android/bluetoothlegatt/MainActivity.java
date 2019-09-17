@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
 
     // UI references.
     private EditText mEmail, mPassword;
-    private Button btnSignIn,btnSignOut,btnAddItems;
+    private Button btnSignIn,btnSignOut;
     private AdaptiveIconDrawable mInflator;
 
     @Override
@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
         mPassword = (EditText) findViewById(R.id.password);
         btnSignIn = (Button) findViewById(R.id.email_sign_in_button);
         btnSignOut = (Button) findViewById(R.id.email_sign_out_button);
-        btnAddItems = (Button) findViewById(R.id.add_item_screen);
+//        btnAddItems = (Button) findViewById(R.id.add_item_screen);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -77,15 +77,6 @@ public class MainActivity extends Activity {
             public void onClick(View view) {
                 mAuth.signOut();
                 toastMessage("Signing Out...");
-            }
-        });
-
-        btnAddItems.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: Switching Activities.");
-//                Intent intent = new Intent(MainActivity.this, AddItemsToDatabase.class);
-//                startActivity(intent);
             }
         });
     }
