@@ -36,7 +36,6 @@ public class MainActivity extends Activity {
         mPassword = (EditText) findViewById(R.id.password);
         btnSignIn = (Button) findViewById(R.id.email_sign_in_button);
         btnSignOut = (Button) findViewById(R.id.email_sign_out_button);
-//        btnAddItems = (Button) findViewById(R.id.add_item_screen);
 
         mAuth = FirebaseAuth.getInstance();
 

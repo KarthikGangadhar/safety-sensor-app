@@ -76,8 +76,10 @@ public class DeviceControlActivity extends Activity {
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private List<Entry> lineEntries = new ArrayList<Entry>();
     private StringBuilder data = new StringBuilder();
-    private String[] dataArray;
-    private int index = 0;
+    private String[] VTArray = new String[1000];
+    private String[] PHArray = new String[1000];
+    private String[] NCNHArray = new String[1000];
+    private int index,VTIndex, PHIndex, NCNHIndex = 0;
     private StringBuilder dataLine = new StringBuilder();
 
     LineChart pressureChart;
@@ -291,23 +293,34 @@ public class DeviceControlActivity extends Activity {
                             }
 
                             if(result != null && result.length >1 && plotData){
-                                String[] dataSplit = result[0].split(":",0);
+                                result[0].replaceAll(" ", "").replaceAll("\r", "").replaceAll("\n", "");
+                                String dataString = "";
+                                for(int i = 0; i < result.length ;i++) {
+                                    if(result[i].contains(":")) {
+                                        dataString = result[i];
+                                        break;
+                                    }
+                                }
+
+                                String[] dataSplit = dataString.split(":",0);
                                 // F:VOC,Temperature,S:Pressure, Humidity,M:NO2,NH3,CO
                                 if(dataSplit[0].contentEquals("F")){
                                     String[] yvalue = dataSplit[1].split(",",0);
-                                    dataLine.append(dataSplit[1]).append(",");
+                                    VTArray[VTIndex] = yvalue[1] + "," + yvalue[2] + ",";
+                                    VTIndex += 1;
                                     handleGasResistance(parseFloat( yvalue[0]), parseFloat(yvalue[1]), context);
                                     addEntry(tempChart , parseFloat(yvalue[2]), "Temparature");
-                                }else if (dataSplit[0].contentEquals("S")){
-                                    String[] yvalue = dataSplit[1].split(",",0);
-                                    dataLine.append(dataSplit[1]).append(",");
+                                }else if (dataSplit[0].contains("S")){
+                                    String[] yvalue = dataSplit[1].replaceAll(" ","").replaceAll("\r","").replaceAll("\n","").split(",",0);
+                                    PHArray[PHIndex] = yvalue[0] + "," + yvalue[1] + ",";
+                                    PHIndex += 1;
                                     addEntry(pressureChart , parseFloat(yvalue[0]), "Pressure");
                                     addEntry(humidityChart , parseFloat(yvalue[1]), "Humidity");
-                                }else if (dataSplit[0].contentEquals("M")){
-                                    String[] yvalue = dataSplit[1].split(",",0);
-                                    dataLine.append(dataSplit[1]).append("\n");
-                                    dataArray[index] = dataLine.toString();
-                                    index += 1;
+                                }else if (dataSplit[0].contains("M")){
+                                    String[] yvalue = dataSplit[1].replaceAll(" ","").replaceAll("\r","").replaceAll("\n","").split(",",0);
+                                    NCNHArray[NCNHIndex] = yvalue[0] + "," + yvalue[1] + "," + yvalue[2] + "\n";
+                                    NCNHIndex += 1;
+
                                     dataLine = new StringBuilder();
                                     addEntry(no2Chart , parseFloat(yvalue[0]), "NO2");
                                     addEntry(nh3Chart , parseFloat(yvalue[1]), "NH3");
@@ -642,13 +655,32 @@ public class DeviceControlActivity extends Activity {
         //generate data
         StringBuilder data = new StringBuilder();
         // F:VOC,Temperature,S:Pressure, Humidity,M:NO2,NH3,CO
-        data.append("VOC(KOhm),Temperature(°C),Pressure(hpa),Humidity(%),NO2(Analog value),NH3(Analog value),CO(Analog value)");
+        data.append("VOC(KOhm),Temperature(°C),Pressure(hpa),Humidity(%),NO2(Analog value),NH3(Analog value),CO(Analog value)\n");
+        index = Math.max(VTIndex, Math.max(NCNHIndex, PHIndex));
+
         for(int i = 0; i<index; i++){
-            data.append(dataArray[i]);
+            if(i <= VTIndex){
+                dataLine.append(VTArray[i]);
+            }else{
+                dataLine.append("-,-");
+            }
+            if(i <= PHIndex){
+                dataLine.append(PHArray[i]);
+            }else{
+                dataLine.append("-,-");
+            }
+            if(i <= NCNHIndex){
+                dataLine.append(NCNHArray[i]);
+            }else{
+                dataLine.append("-,-,-\n");
+            }
+            data.append(dataLine.toString());
         }
 
-        dataArray = new String[1000];
-        index = 0;
+        VTArray = new String[1000];
+        PHArray = new String[1000];
+        NCNHArray = new String[1000];
+        index = VTIndex = PHIndex = NCNHIndex = 0;
 
         try{
             //saving the file into device
