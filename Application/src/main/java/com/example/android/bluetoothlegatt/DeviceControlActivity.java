@@ -76,9 +76,9 @@ public class DeviceControlActivity extends Activity {
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private List<Entry> lineEntries = new ArrayList<Entry>();
     private StringBuilder data = new StringBuilder();
-    private String[] VTArray = new String[1000];
-    private String[] PHArray = new String[1000];
-    private String[] NCNHArray = new String[1000];
+    private String[] VTArray = new String[1000000];
+    private String[] PHArray = new String[1000000];
+    private String[] NCNHArray = new String[1000000];
     private int index,VTIndex, PHIndex, NCNHIndex = 0;
     private StringBuilder dataLine = new StringBuilder();
 
@@ -114,7 +114,7 @@ public class DeviceControlActivity extends Activity {
             // Automatically connects to the device upon successful start-up initialization.
             mBluetoothLeService.connect(mDeviceAddress);
             drawLineChart(1, "Pressure", " hPa (hectopascal: 100 x 1 pascal)");
-            drawLineChart(2, "Temparature", " °C (Degree Celsius)");
+            drawLineChart(2, "Temperature", " °C (Degree Celsius)");
             drawLineChart(3, "Humidity", " % (Percentage)");
             drawLineChart(4, "Resistance", "Normalized Plot");
             drawLineChart(5, "NO2", "Analog Value Plot");
@@ -309,7 +309,7 @@ public class DeviceControlActivity extends Activity {
                                     VTArray[VTIndex] = yvalue[1] + "," + yvalue[2] + ",";
                                     VTIndex += 1;
                                     handleGasResistance(parseFloat( yvalue[0]), parseFloat(yvalue[1]), context);
-                                    addEntry(tempChart , parseFloat(yvalue[2]), "Temparature");
+                                    addEntry(tempChart , parseFloat(yvalue[2]), "Temperature");
                                 }else if (dataSplit[0].contains("S")){
                                     String[] yvalue = dataSplit[1].replaceAll(" ","").replaceAll("\r","").replaceAll("\n","").split(",",0);
                                     PHArray[PHIndex] = yvalue[0] + "," + yvalue[1] + ",";
@@ -377,6 +377,7 @@ public class DeviceControlActivity extends Activity {
 //        mp.pause();
         manager.notify(73195, builder.build());
     }
+    
     private void addEntry(LineChart chart, float yvalue, String type) {
         LineData data = chart.getData();
 
@@ -388,6 +389,12 @@ public class DeviceControlActivity extends Activity {
                 set = createSet(type);
                 data.addDataSet(set);
             }
+
+            // if(set.getEntryCount() > 1000){
+            //     for(int i=0; i< 16; i++){
+            //         set.removeLast();
+            //     }
+            // }
 
             Log.d(TAG, "added xvalue: " + set.getEntryCount()+ ", yvalue: " + yvalue);
             data.addEntry(new Entry(set.getEntryCount(), yvalue), 0);
@@ -582,6 +589,7 @@ public class DeviceControlActivity extends Activity {
         xl.setTextColor(Color.BLACK);
         xl.setDrawGridLines(true);
         xl.setAvoidFirstLastClipping(true);
+        // xl.setEnabled(false);
         xl.setEnabled(true);
 
         YAxis rightAxis = lineChart.getAxisRight();
@@ -677,9 +685,9 @@ public class DeviceControlActivity extends Activity {
             data.append(dataLine.toString());
         }
 
-        VTArray = new String[1000];
-        PHArray = new String[1000];
-        NCNHArray = new String[1000];
+        VTArray = new String[1000000];
+        PHArray = new String[1000000];
+        NCNHArray = new String[1000000];
         index = VTIndex = PHIndex = NCNHIndex = 0;
 
         try{
