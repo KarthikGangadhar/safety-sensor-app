@@ -669,7 +669,7 @@ public class DeviceControlActivity extends Activity {
         index = Math.min(VTIndex, Math.max(NCNHIndex, PHIndex));
 
         for(int i = 0; i<index; i++){
-            if(i <= VTIndex){
+            if(i <= VTIndex && VTArray[i] != null){
                 dataLine.append(VTArray[i]);
             }else{
                 dataLine.append("0,0");
