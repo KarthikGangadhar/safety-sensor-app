@@ -46,7 +46,9 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -664,24 +666,26 @@ public class DeviceControlActivity extends Activity {
         StringBuilder data = new StringBuilder();
         // F:VOC,Temperature,S:Pressure, Humidity,M:NO2,NH3,CO
         data.append("VOC(KOhm),Temperature(°C),Pressure(hpa),Humidity(%),NO2(Analog value),NH3(Analog value),CO(Analog value)\n");
-        index = Math.max(VTIndex, Math.max(NCNHIndex, PHIndex));
+        index = Math.min(VTIndex, Math.max(NCNHIndex, PHIndex));
 
         for(int i = 0; i<index; i++){
             if(i <= VTIndex){
                 dataLine.append(VTArray[i]);
             }else{
-                dataLine.append("-,-");
+                dataLine.append("0,0");
             }
-            if(i <= PHIndex){
+            if(i <= PHIndex && PHArray[i] != null){
                 dataLine.append(PHArray[i]);
             }else{
-                dataLine.append("-,-");
+                dataLine.append("0,0");
             }
-            if(i <= NCNHIndex){
+            if(i <= NCNHIndex && NCNHArray[i] != null){
                 dataLine.append(NCNHArray[i]);
             }else{
-                dataLine.append("-,-,-\n");
+                dataLine.append("0,0,0");
+                dataLine.append("\n");
             }
+
             data.append(dataLine.toString());
         }
 
@@ -692,14 +696,15 @@ public class DeviceControlActivity extends Activity {
 
         try{
             //saving the file into device
-            FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
+            String fileName = new SimpleDateFormat("yyyyMMddHHmmss'.csv'").format(new Date());
+            FileOutputStream out = openFileOutput(fileName, Context.MODE_PRIVATE);
             out.write((data.toString()).getBytes());
             out.close();
 
             data = new StringBuilder();
             //exporting
             Context context = getApplicationContext();
-            File filelocation = new File(getFilesDir(), "data.csv");
+            File filelocation = new File(getFilesDir(), fileName);
             Uri path = FileProvider.getUriForFile(context, "com.example.exportcsv.fileprovider", filelocation);
             Intent fileIntent = new Intent(Intent.ACTION_SEND);
             fileIntent.setType("text/csv");
