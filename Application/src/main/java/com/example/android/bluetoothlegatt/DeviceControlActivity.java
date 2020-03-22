@@ -314,7 +314,10 @@ public class DeviceControlActivity extends Activity {
                                     addEntry(tempChart , parseFloat(yvalue[2]), "Temperature");
                                 }else if (dataSplit[0].contains("S")){
                                     String[] yvalue = dataSplit[1].replaceAll(" ","").replaceAll("\r","").replaceAll("\n","").split(",",0);
-                                    PHArray[PHIndex] = yvalue[0] + "," + yvalue[1] + ",";
+                                    String presValue = (yvalue[0] != null) ? (yvalue[0] + ",") : ("0,");
+                                    String humdValue = (yvalue[1] != null) ? (yvalue[1] + ",") : ("0,");
+                                    PHArray[PHIndex] = presValue + humdValue;
+
                                     PHIndex += 1;
                                     addEntry(pressureChart , parseFloat(yvalue[0]), "Pressure");
                                     addEntry(humidityChart , parseFloat(yvalue[1]), "Humidity");
